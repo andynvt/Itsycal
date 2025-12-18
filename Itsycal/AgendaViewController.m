@@ -200,7 +200,7 @@ static NSString *kEventCellIdentifier = @"EventCell";
     [menu addItemWithTitle:NSLocalizedString(@"Copy", nil) action:@selector(copyEventToPasteboard:) keyEquivalent:@""];
     EventInfo *info = self.events[_tv.clickedRow];
     if (info.event.calendar.allowsContentModifications) {
-        NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
+        NSMenuItem *item =[menu addItemWithTitle:NSLocalizedString(@"Delete…", nil) action:@selector(deleteEvent:) keyEquivalent:@""];
         item.tag = _tv.clickedRow;
     }
 }
@@ -742,6 +742,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
     return self;
 }
 
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)sizeChanged:(id)sender
 {
     _dayTextField.font = [NSFont systemFontOfSize:SizePref.fontSize weight:NSFontWeightSemibold];
@@ -774,8 +779,8 @@ static NSString *kEventCellIdentifier = @"EventCell";
     NSTextField* (^label)(void) = ^NSTextField* () {
         NSTextField *lbl = [NSTextField labelWithString:@""];
         lbl.font = [NSFont systemFontOfSize:SizePref.fontSize];
-        lbl.lineBreakMode = NSLineBreakByWordWrapping;
-        lbl.cell.truncatesLastVisibleLine = YES;
+        lbl.lineBreakMode = NSLineBreakByTruncatingTail;
+        lbl.allowsExpansionToolTips = YES;
         return lbl;
     };
     self = [super init];
@@ -838,6 +843,11 @@ static NSString *kEventCellIdentifier = @"EventCell";
         REGISTER_FOR_SIZE_CHANGE;
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)sizeChanged:(id)sender
